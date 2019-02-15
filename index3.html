@@ -1,0 +1,131 @@
+<html>
+    <head>
+         <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.36/dist/web3.min.js"></script>
+         <script>
+         window.addEventListener('load', async () => {
+    // Modern dapp browsers...
+    if (window.ethereum) {
+        window.web3 = new Web3(ethereum);
+        try {
+            // Request account access if needed
+            await ethereum.enable();
+           
+            // Acccounts now exposed
+            web3.eth.sendTransaction({/* ... */});
+        } catch (error) {
+            // User denied account access...
+        }
+    }
+    // Legacy dapp browsers...
+    else if (window.web3) {
+        window.web3 = new Web3(web3.currentProvider);
+        // Acccounts always exposed
+        web3.eth.sendTransaction({/* ... */});
+    }
+    // Non-dapp browsers...
+    else {
+        console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+    }
+           ready();
+           document.getElementById("btn").addEventListener("click",send,false);
+});
+          var contract;
+          const abi = [
+                {
+                    "constant": false,
+                    "inputs": [
+                        {
+                            "name": "_messaggio",
+                            "type": "string"
+                        }
+                    ],
+                    "name": "invia",
+                    "outputs": [],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "constructor"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": false,
+                            "name": "mittente",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "name": "messaggio",
+                            "type": "string"
+                        }
+                    ],
+                    "name": "Messaggio",
+                    "type": "event"
+                },
+                {
+                    "constant": true,
+                    "inputs": [],
+                    "name": "owner",
+                    "outputs": [
+                        {
+                            "name": "",
+                            "type": "address"
+                        }
+                    ],
+                    "payable": false,
+                    "stateMutability": "view",
+                    "type": "function"
+                }
+            ];
+            function ready(){
+                console.log(window.web3.version);
+                web3.eth.getCoinbase().then((v)=>{document.getElementById("address").value=v});
+                contract = new web3.eth.Contract(abi,"0x271515531d8c898d482f914d2e867c83a26f8a02");
+                contract.events.Messaggio({}, (error, event) => { console.log(event); });
+            }
+            
+            function send(e){
+                e.preventDefault();
+                contract.methods.invia("ciao").send({from: document.getElementById("address").value}).then(()=>{
+                    var li = document.createElement("li");
+                    var msg = document.createTextNode(document.getElementById("address").value + " ha scritto : " + document.getElementById("msg").value);
+                    li.appendChild(msg);
+                    document.getElementById("msgs").appendChild(li);
+                });
+            }
+            
+           
+            
+            
+         </script>
+         <style>
+            .block{display: block; width:25em;}
+         </style>
+    </head>
+    <body>
+        <form id="frm">
+            <input class="block" id="address" />
+            <textarea class="block" id="msg"></textarea>
+            <input class="block" type="submit" id="btn" value="Invia">
+        </form>
+        <ul id="msgs">
+            
+        </ul>
+    <script>
+      /*  if (typeof web3 !== 'undefined') {
+            web3 = new Web3(web3.currentProvider);
+        } else {
+            web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+        }
+        */
+        
+      
+    </script>
+    </body>
+</html>
